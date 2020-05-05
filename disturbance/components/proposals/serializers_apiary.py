@@ -280,3 +280,46 @@ class InternalProposalApiarySerializer(BaseProposalSerializer):
         return '/payments/invoice-pdf/{}'.format(obj.fee_invoice_reference) if obj.fee_paid else None
 
 
+class SaveApiaryProposalSerializer(BaseProposalSerializer):
+    assessor_data = serializers.JSONField(required=False)
+
+    class Meta:
+        model = Proposal
+        fields = (
+                'id',
+                'application_type',
+                'activity',
+                'approval_level',
+                'title',
+                'region',
+                'district',
+                'tenure',
+                'data',
+                'assessor_data',
+                'comment_data',
+                'schema',
+                'customer_status',
+                'processing_status',
+                'review_status',
+                #'hard_copy',
+                'applicant',
+                'proxy_applicant',
+                'submitter',
+                'assigned_officer',
+                'previous_application',
+                'lodgement_date',
+                'documents',
+                'requirements',
+                'readonly',
+                'can_user_edit',
+                'can_user_view',
+                'reference',
+                'lodgement_number',
+                'lodgement_sequence',
+                'can_officer_process',
+                'sub_activity_level1',
+                'sub_activity_level2',
+                'management_area',
+                )
+        read_only_fields=('documents','requirements')
+

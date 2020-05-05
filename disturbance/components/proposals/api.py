@@ -76,6 +76,7 @@ from disturbance.components.proposals.serializers_apiary import (
     ProposalApiarySiteLocationSerializer,
     ProposalApiaryTemporaryUseSerializer,
     ProposalApiarySiteTransferSerializer,
+    SaveApiaryProposalSerializer,
 )
 from disturbance.components.approvals.models import Approval
 from disturbance.components.approvals.serializers import ApprovalSerializer
@@ -1048,23 +1049,43 @@ class ProposalViewSet(viewsets.ModelViewSet):
             qs_proposal_type = ProposalType.objects.all().order_by('name', '-version').distinct('name')
             proposal_type = qs_proposal_type.get(name=application_type.name)
 
-            data = {
-                #'schema': qs_proposal_type.order_by('-version').first().schema,
-                'schema': proposal_type.schema,
-                'submitter': request.user.id,
-                'applicant': request.data.get('behalf_of'),
-                'application_type': application_type.id,
-                'region': region,
-                'district': district,
-                'activity': activity,
-                'approval_level': approval_level,
-                'sub_activity_level1':sub_activity1,
-                'sub_activity_level2':sub_activity2,
-                'management_area':category,
-                'data': [
-                ],
-            }
-            serializer = SaveProposalSerializer(data=data)
+            # 20200501: added logic to allow individual applications
+            if application_type == 'Apiary' and request.data.get('behalf_of') == 'individual':
+                data = {
+                    #'schema': qs_proposal_type.order_by('-version').first().schema,
+                    'schema': proposal_type.schema,
+                    'submitter': request.user.id,
+                    #'applicant': None,
+                    'application_type': application_type.id,
+                    'region': region,
+                    'district': district,
+                    'activity': activity,
+                    'approval_level': approval_level,
+                    'sub_activity_level1':sub_activity1,
+                    'sub_activity_level2':sub_activity2,
+                    'management_area':category,
+                    'data': [
+                    ],
+                }
+                serializer = SaveApiaryProposalSerializer(data=data)
+            else:
+                data = {
+                    #'schema': qs_proposal_type.order_by('-version').first().schema,
+                    'schema': proposal_type.schema,
+                    'submitter': request.user.id,
+                    'applicant': request.data.get('behalf_of'),
+                    'application_type': application_type.id,
+                    'region': region,
+                    'district': district,
+                    'activity': activity,
+                    'approval_level': approval_level,
+                    'sub_activity_level1':sub_activity1,
+                    'sub_activity_level2':sub_activity2,
+                    'management_area':category,
+                    'data': [
+                    ],
+                }
+                serializer = SaveProposalSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             instance=serializer.save()
 
