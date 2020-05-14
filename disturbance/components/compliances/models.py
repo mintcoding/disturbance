@@ -338,8 +338,8 @@ class ComplianceAmendmentRequest(CompRequest):
             send_amendment_email_notification(self,request, compliance)
 
 
-def update_proposal_complaince_filename(instance, filename):
-    return 'proposals/{}/compliance/{}/{}'.format(instance.compliance.proposal.id,instance.compliance.id,filename)
+# def update_proposal_complaince_filename(instance, filename):
+#     return 'proposals/{}/compliance/{}/{}'.format(instance.compliance.proposal.id,instance.compliance.id,filename)
 
 
 

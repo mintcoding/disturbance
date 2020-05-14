@@ -371,6 +371,7 @@ export default {
                 showCancelButton: true,
                 confirmButtonText: 'Submit'
             }).then(() => {
+                console.log('in then()');
                 vm.submittingProposal = true;
                 // Only Apiary has an application fee
                 if (!vm.proposal.fee_paid && vm.proposal.application_type=='Apiary') {
@@ -400,6 +401,7 @@ export default {
         },
         // Apiary submission
         save_and_redirect: function(e) {
+            console.log('save_and_redirect');
             let vm = this;
             vm.form=document.forms.new_proposal;
             let formData = new FormData(vm.form);
@@ -408,7 +410,14 @@ export default {
             try {
                 // Add site locations
                 formData.append('site_locations', JSON.stringify(this.$refs.proposal_apiary.$refs.apiary_site_locations.site_locations));
-            } catch(e){ }
+            } catch(e){
+                console.log('Error in save_and_redirect()');
+                console.log(e);
+            }
+            console.log('proposal_submit_url');
+            console.log(vm.proposal_submit_url);
+            console.log('application_fee_url');
+            console.log(vm.application_fee_url);
 
             //vm.save_applicant_data();
             vm.$http.post(vm.proposal_submit_url,formData).then(res=>{

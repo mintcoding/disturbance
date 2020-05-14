@@ -2128,14 +2128,14 @@ class ApiarySite(models.Model):
 
 class ApiarySiteFeeRemainder(models.Model):
     '''
-    A record of this model means a site is left
+    A record of this model represents e site is left
 
     You have to check the validity of the record by date_expiry and date_used fields
     '''
     site_category = models.ForeignKey(SiteCategory)
     apiary_site_fee_type = models.ForeignKey(ApiarySiteFeeType)
-    applicant = models.ForeignKey(EmailUser)
-    # number_of_sites_left = models.SmallIntegerField(default=0)
+    applicant = models.ForeignKey(Organisation, null=True, blank=True)
+    proxy_applicant = models.ForeignKey(EmailUser, null=True, blank=True)
     datetime_created = models.DateTimeField(auto_now_add=True)
     date_expiry = models.DateField(null=True, blank=True)
     date_used = models.DateField(null=True, blank=True)

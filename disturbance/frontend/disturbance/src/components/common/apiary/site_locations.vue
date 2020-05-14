@@ -117,8 +117,8 @@
                         </h3>
                     </div>
                     <div class="panel-body collapse in" id="checkList">
-                        <div class="row">
-                            <div v-if="q" class="col-sm-12">
+                        <div v-if="q" class="row">
+                            <div class="col-sm-12">
                                 <li class="col-sm-6" >
                                     <label class="control-label">{{q.question.text}}</label>
                                 </li>
@@ -195,6 +195,7 @@
         data:function () {
             let vm=this;
             return{
+                q: null,
                 values:null,
                 pBody: 'pBody'+vm._uid,
                 webmap_src: 'https://dpaw.maps.arcgis.com/apps/Embed/index.html?webmap=1d956bc5513e40568a4f01950906b64b&extent=95.5777,-38.2527,149.5425,-12.3581&home=true&zoom=true&scale=true&search=true&searchextent=true&details=true&disable_scroll=true&theme=light',

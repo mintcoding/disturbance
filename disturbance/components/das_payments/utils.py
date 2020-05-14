@@ -61,7 +61,7 @@ def create_fee_lines_apiary(proposal):
     MIN_NUMBER_OF_SITES_TO_APPLY = 5
     line_items = []
 
-    applicant = EmailUser.objects.get(email='katsufumi.shibata@dbca.wa.gov.au')  # Get proper applicant
+    # applicant = EmailUser.objects.get(email='katsufumi.shibata@dbca.wa.gov.au')  # TODO: Get proper applicant
 
     # Calculate total number of sites applied per category
     summary = {}
@@ -79,13 +79,15 @@ def create_fee_lines_apiary(proposal):
         # Retrieve sites left
         filter_site_category = Q(site_category=site_category)
         filter_site_fee_type = Q(apiary_site_fee_type=ApiarySiteFeeType.objects.get(name=ApiarySiteFeeType.FEE_TYPE_APPLICATION))
-        filter_applicant = Q(applicant=applicant)
+        filter_applicant = Q(applicant=proposal.applicant)
+        filter_proxy_applicant = Q(proxy_applicant=proposal.proxy_applicant)
         filter_expiry = Q(date_expiry__gte=today_local)
         filter_used = Q(date_used__isnull=True)
         site_fee_remainders = ApiarySiteFeeRemainder.objects.filter(
             filter_site_category &
             filter_site_fee_type &
             filter_applicant &
+            filter_proxy_applicant &
             filter_expiry &
             filter_used
         ).order_by('date_expiry')  # Older comes earlier
@@ -103,6 +105,13 @@ def create_fee_lines_apiary(proposal):
         number_of_sites_calculate = quotient * MIN_NUMBER_OF_SITES_TO_APPLY + MIN_NUMBER_OF_SITES_TO_APPLY if remainder else quotient * MIN_NUMBER_OF_SITES_TO_APPLY
         number_of_sites_to_add_as_remainder = number_of_sites_calculate - number_of_sites_after_deduction
         application_price = site_category.retrieve_current_fee_per_site_by_type(ApiarySiteFeeType.FEE_TYPE_APPLICATION)
+
+        # Avoid ledger error (ledger doesn't accept quantity=0)
+        # in that case, set quantity=1 and price=0
+        if number_of_sites_calculate == 0:
+            number_of_sites_calculate = 1
+            application_price = 0
+
         line_item = {
             'ledger_description': 'Application Fee - {} - {} - {}'.format(now, proposal.lodgement_number, site_category.name),
             'oracle_code': proposal.application_type.oracle_code_application,
@@ -117,7 +126,8 @@ def create_fee_lines_apiary(proposal):
             ApiarySiteFeeRemainder.objects.create(
                 site_category=site_category,
                 apiary_site_fee_type=ApiarySiteFeeType.objects.get(name=ApiarySiteFeeType.FEE_TYPE_APPLICATION),
-                applicant=applicant,
+                applicant=proposal.applicant,
+                proxy_applicant=proposal.proxy_applicant,
                 date_expiry= today_local + timedelta(days=7)
             )
 

@@ -1,5 +1,6 @@
 .settings/
 .env
+*.swo
 venv/
 venv2/
 node_modules/

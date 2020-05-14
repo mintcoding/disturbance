@@ -718,6 +718,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
                 instance.submit(request,self)
                 instance.tenure = search_tenure(instance)
             else:
+                save_proponent_data(instance, request, self)
                 proposal_submit_apiary(instance, request)
             instance.save()
             serializer = self.get_serializer(instance)

@@ -1,10 +1,12 @@
 import re
+
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db import transaction
 from django.contrib.gis.geos import Point
 from preserialize.serialize import serialize
 from ledger.accounts.models import EmailUser, Document
-from disturbance.components.proposals.models import ProposalDocument, ProposalUserAction, ApiarySite
+from disturbance.components.proposals.models import ProposalDocument, ProposalUserAction, ApiarySite, SiteCategory
 from disturbance.components.proposals.serializers import SaveProposalSerializer
 
 from disturbance.components.main.models import ApplicationType
@@ -378,7 +380,8 @@ def save_proponent_data_apiary(instance, request, viewset):
                     apiary_site['proposal_apiary_site_location_id'] = instance.apiary_site_location.id
 
                     # TODO: site_category_id must be determined by the category retrieved from the GIS server
-                    apiary_site['site_category_id'] = 1 if index % 2 == 0 else 2
+                    site_categories = SiteCategory.objects.all()
+                    apiary_site['site_category_id'] = site_categories[0].id if index % 2 == 0 else site_categories[1].id
 
                     try:
                         # Update existing
