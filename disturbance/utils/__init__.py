@@ -1,3 +1,5 @@
+import sys
+
 from django.conf import settings
 from disturbance.components.proposals.models import Proposal, ProposalType, HelpPage, ApplicationType
 from collections import OrderedDict
@@ -401,4 +403,11 @@ def create_dummy_history(proposal_id):
     p.previous_application = prev_proposal
     p.save()
     return p.id, p.get_history
+
+
+def are_migrations_running():
+    '''
+    Checks whether the app was launched with the migration-specific params
+    '''
+    return sys.argv and ('migrate' in sys.argv or 'makemigrations' in sys.argv)
 
