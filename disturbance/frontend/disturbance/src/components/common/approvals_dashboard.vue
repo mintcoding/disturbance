@@ -85,7 +85,7 @@ import {
     helpers
 }from '@/utils/hooks'
 export default {
-    name: 'ProposalTableDash',
+    name: 'ApprovalsTableDash',
     props: {
         level:{
             type: String,

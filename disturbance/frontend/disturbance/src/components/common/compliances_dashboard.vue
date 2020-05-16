@@ -77,7 +77,7 @@ import {
     helpers
 }from '@/utils/hooks'
 export default {
-    name: 'ProposalTableDash',
+    name: 'CompliancesTableDash',
     props: {
         level:{
             type: String,
@@ -125,7 +125,7 @@ export default {
                 'Future',
                 'With Assessor',
                 'Approved',
-                
+
             ],
             proposal_activityTitles : [],
             proposal_regions: [],
@@ -215,7 +215,7 @@ export default {
                             if (!vm.is_external){
                                 if (full.processing_status=='With Assessor' && vm.check_assessor(full)) {
                                     links +=  `<a href='/internal/compliance/${full.id}'>Process</a><br/>`;
-                                    
+
                                 }
                                 else {
                                     links +=  `<a href='/internal/compliance/${full.id}'>View</a><br/>`;
@@ -224,7 +224,7 @@ export default {
                             else{
                                 if (full.can_user_view) {
                                     links +=  `<a href='/external/compliance/${full.id}'>View</a><br/>`;
-                                    
+
                                 }
                                 else {
                                     links +=  `<a href='/external/compliance/${full.id}'>Submit</a><br/>`;
@@ -322,7 +322,7 @@ export default {
         is_external: function(){
             return this.level == 'external';
         },
-        
+
     },
     methods:{
         fetchFilterLists: function(){
@@ -361,8 +361,8 @@ export default {
                     vm.filterComplianceDueFrom = "";
                 }
             });
-            // End Proposal Date Filters          
-            
+            // End Proposal Date Filters
+
 
             // Initialise select2 for region
             $(vm.$refs.filterRegion).select2({
@@ -389,7 +389,7 @@ export default {
                 function(settings,data,dataIndex,original){
                     let found = false;
                     let filtered_regions = vm.filterProposalRegion.split(',');
-                    if (filtered_regions == 'All'){ return true; } 
+                    if (filtered_regions == 'All'){ return true; }
 
                     let regions = original.regions != '' && original.regions != null ? original.regions.split(','): [];
 
@@ -410,7 +410,7 @@ export default {
             vm.$refs.proposal_datatable.table.dataTableExt.afnFiltering.push(
                 function(settings,data,dataIndex,original){
                     let filtered_submitter = vm.filterProposalSubmitter;
-                    if (filtered_submitter == 'All'){ return true; } 
+                    if (filtered_submitter == 'All'){ return true; }
                     return filtered_submitter == original.submitter.email;
                 }
             );
@@ -444,7 +444,7 @@ export default {
                         else{
                             return false;
                         }
-                    } 
+                    }
                     else{
                         return false;
                     }
@@ -455,27 +455,27 @@ export default {
             let vm = this;
             Vue.http.get(api_endpoints.profile).then((response) => {
                 vm.profile = response.body
-                              
+
             },(error) => {
                 console.log(error);
-                
+
             })
         },
         check_assessor: function(compliance){
-            let vm = this;         
-            
+            let vm = this;
+
             var assessor = compliance.allowed_assessors.filter(function(elem){
                     return(elem.id==vm.profile.id)
                 });
-                
+
             if (assessor.length > 0){
                 //console.log(proposal.id, assessor)
                 return true;
             }
             else
-                return false;       
-            
-            return false;       
+                return false;
+
+            return false;
         }
     },
     mounted: function(){
@@ -496,7 +496,7 @@ export default {
             var column = vm.$refs.proposal_datatable.vmDataTable.columns(8); //Hide 'Assigned To column for external'
             column.visible(false);
         }
-        
+
     }
 }
 </script>
