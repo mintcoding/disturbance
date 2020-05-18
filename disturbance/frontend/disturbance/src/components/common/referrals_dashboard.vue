@@ -84,7 +84,7 @@ import {
     helpers
 }from '@/utils/hooks'
 export default {
-    name: 'ProposalTableDash',
+    name: 'RefferralsTableDash',
     props: {
         url:{
             type: String,
