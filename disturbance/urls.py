@@ -15,6 +15,7 @@ from disturbance.components.approvals import api as approval_api
 from disturbance.components.compliances import api as compliances_api
 from disturbance.components.main import api as main_api
 from disturbance.components.das_payments import api as payment_api
+from disturbance.components.proposals import api_apiary as proposal_apiary_api
 
 from ledger.urls import urlpatterns as ledger_patterns
 
@@ -25,7 +26,6 @@ from disturbance.utils import are_migrations_running
 router = routers.DefaultRouter()
 router.register(r'organisations',org_api.OrganisationViewSet)
 router.register(r'proposal',proposal_api.ProposalViewSet)
-router.register(r'proposal_apiary_site_location', proposal_api.ProposalApiarySiteLocationViewSet)
 router.register(r'on_site_information', proposal_api.OnSiteInformationViewSet)
 router.register(r'proposal_paginated',proposal_api.ProposalPaginatedViewSet)
 router.register(r'approval_paginated',approval_api.ApprovalPaginatedViewSet)
@@ -45,8 +45,10 @@ router.register(r'regions', main_api.RegionViewSet)
 router.register(r'activity_matrix', main_api.ActivityMatrixViewSet)
 #router.register(r'tenure', main_api.TenureViewSet)
 router.register(r'application_types', main_api.ApplicationTypeViewSet)
-router.register(r'apiary_referral_groups', proposal_api.ApiaryReferralGroupViewSet)
 #router.register(r'payment',payment_api.PaymentViewSet)
+router.register(r'proposal_apiary_site_location', proposal_apiary_api.ProposalApiarySiteLocationViewSet)
+router.register(r'apiary_referral_groups', proposal_apiary_api.ApiaryReferralGroupViewSet)
+router.register(r'proposal_apiary',proposal_apiary_api.ApiaryProposalViewSet)
 
 
 api_patterns = [

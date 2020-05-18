@@ -1991,6 +1991,15 @@ class HelpPage(models.Model):
 # --------------------------------------------------------------------------------------
 # Apiary Models Start
 # --------------------------------------------------------------------------------------
+class ApiaryProposal(Proposal):
+
+    def __str__(self):
+        return 'id:{} - {}'.format(self.id, self.title)
+
+    class Meta:
+        app_label = 'disturbance'
+
+
 class ProposalApiarySiteLocation(models.Model):
     title = models.CharField('Title', max_length=200, null=True)
     location = gis_models.PointField(srid=4326, blank=True, null=True)
