@@ -18,7 +18,8 @@ from ledger.accounts.models import EmailUser, RevisionedMixin
 from ledger.licence.models import  Licence
 from disturbance import exceptions
 from disturbance.components.organisations.models import Organisation
-from disturbance.components.main.models import CommunicationsLogEntry, Region, UserAction, Document
+from disturbance.components.main.models import CommunicationsLogEntry, Region
+from ledger_common.models import UserAction, Document
 from disturbance.components.proposals.models import ProposalRequirement, AmendmentReason
 from disturbance.components.compliances.email import (
                         send_compliance_accept_email_notification,

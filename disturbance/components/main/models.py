@@ -7,37 +7,31 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.exceptions import ValidationError
-from ledger.accounts.models import EmailUser, Document, RevisionedMixin
+from ledger.accounts.models import (
+        EmailUser, 
+        #Document, 
+        RevisionedMixin
+        )
 from django.contrib.postgres.fields.jsonb import JSONField
+from ledger_common import models as ledger_common_models
 
 
 @python_2_unicode_compatible
-class Region(models.Model):
-    name = models.CharField(max_length=200, unique=True)
-    forest_region = models.BooleanField(default=False)
+class Region(ledger_common_models.AbstractRegion):
+#class Region(models.Model):
 
     class Meta:
-        ordering = ['name']
+        #ordering = ['name']
         app_label = 'disturbance'
-
-    def __str__(self):
-        return self.name
 
 
 @python_2_unicode_compatible
-class District(models.Model):
-    region = models.ForeignKey(Region, related_name='districts')
-    name = models.CharField(max_length=200, unique=True)
-    code = models.CharField(max_length=3)
-    archive_date = models.DateField(null=True, blank=True)
+class District(ledger_common_models.AbstractDistrict):
+    region = models.ForeignKey('disturbance.Region', related_name='districts')
 
     class Meta:
-        ordering = ['name']
+        #ordering = ['name']
         app_label = 'disturbance'
-
-    def __str__(self):
-        return self.name
-
 
 class DistrictDbca(models.Model):
     wkb_geometry = MultiPolygonField(srid=4326, blank=True, null=True)
@@ -128,7 +122,6 @@ class ApplicationType(models.Model):
     def __str__(self):
         return self.name
 
-
 @python_2_unicode_compatible
 class ActivityMatrix(models.Model):
     # name = models.CharField(verbose_name='Activity matrix name', max_length=24, choices=application_type_choicelist(), default='Disturbance')
@@ -163,49 +156,25 @@ class Tenure(models.Model):
         return '{}: {}'.format(self.name, self.application_type)
 
 
-@python_2_unicode_compatible
-class UserAction(models.Model):
-    who = models.ForeignKey(EmailUser, null=False, blank=False)
-    when = models.DateTimeField(null=False, blank=False, auto_now_add=True)
-    what = models.TextField(blank=False)
+#@python_2_unicode_compatible
+#class UserAction(models.Model):
+#    who = models.ForeignKey(EmailUser, null=False, blank=False)
+#    when = models.DateTimeField(null=False, blank=False, auto_now_add=True)
+#    what = models.TextField(blank=False)
+#
+#    def __str__(self):
+#        return "{what} ({who} at {when})".format(
+#            what=self.what,
+#            who=self.who,
+#            when=self.when
+#        )
+#
+#    class Meta:
+#        abstract = True
+#        app_label = 'disturbance'
 
-    def __str__(self):
-        return "{what} ({who} at {when})".format(
-            what=self.what,
-            who=self.who,
-            when=self.when
-        )
 
-    class Meta:
-        abstract = True
-        app_label = 'disturbance'
-
-
-class CommunicationsLogEntry(models.Model):
-    TYPE_CHOICES = [
-        ('email', 'Email'),
-        ('phone', 'Phone Call'),
-        ('mail', 'Mail'),
-        ('person', 'In Person'),
-        ('referral_complete', 'Referral Completed'),
-    ]
-    DEFAULT_TYPE = TYPE_CHOICES[0][0]
-
-    # to = models.CharField(max_length=200, blank=True, verbose_name="To")
-    to = models.TextField(blank=True, verbose_name="To")
-    fromm = models.CharField(max_length=200, blank=True, verbose_name="From")
-    # cc = models.CharField(max_length=200, blank=True, verbose_name="cc")
-    cc = models.TextField(blank=True, verbose_name="cc")
-
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=DEFAULT_TYPE)
-    reference = models.CharField(max_length=100, blank=True)
-    subject = models.CharField(max_length=200, blank=True, verbose_name="Subject / Description")
-    text = models.TextField(blank=True)
-
-    customer = models.ForeignKey(EmailUser, null=True, related_name='+')
-    staff = models.ForeignKey(EmailUser, null=True, related_name='+')
-
-    created = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+class CommunicationsLogEntry(ledger_common_models.AbstractCommunicationsLogEntry):
 
     class Meta:
         app_label = 'disturbance'
@@ -237,26 +206,10 @@ class Document(models.Model):
 
 
 @python_2_unicode_compatible
-class SystemMaintenance(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-
-    def duration(self):
-        """ Duration of system maintenance (in mins) """
-        return int((self.end_date - self.start_date).total_seconds() / 60.) if self.end_date and self.start_date else ''
-        # return (datetime.now(tz=tz) - self.start_date).total_seconds()/60.
-
-    duration.short_description = 'Duration (mins)'
+class SystemMaintenance(ledger_common_models.AbstractSystemMaintenance):
 
     class Meta:
         app_label = 'disturbance'
-        verbose_name_plural = "System maintenance"
-
-    def __str__(self):
-        return 'System Maintenance: {} ({}) - starting {}, ending {}'.format(self.name, self.description,
-                                                                             self.start_date, self.end_date)
 
 
 @python_2_unicode_compatible

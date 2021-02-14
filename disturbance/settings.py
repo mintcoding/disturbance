@@ -37,6 +37,7 @@ INSTALLED_APPS += [
     'rest_framework_gis',
     'reset_migrations',
     'ckeditor',
+    'ledger_common',
 ]
 
 ADD_REVERSION_ADMIN=True

@@ -13,7 +13,7 @@ from ledger.accounts.models import EmailUser, RevisionedMixin
 from disturbance.components.approvals.pdf import create_approval_document
 from disturbance.components.organisations.models import Organisation
 from disturbance.components.proposals.models import Proposal, ProposalUserAction, ApiarySite, ApiarySiteOnProposal
-from disturbance.components.main.models import CommunicationsLogEntry, UserAction, Document
+from disturbance.components.main.models import CommunicationsLogEntry
 from disturbance.components.approvals.email import (
     send_approval_expire_email_notification,
     send_approval_cancel_email_notification,
@@ -27,6 +27,11 @@ from disturbance.settings import SITE_STATUS_CURRENT, SITE_STATUS_NOT_TO_BE_REIS
 from disturbance.utils import search_keys, search_multiple_keys
 from disturbance.helpers import is_customer
 from django_countries.fields import CountryField
+from ledger_common.models import (
+        AbstractApproval,
+        UserAction, 
+        Document,
+        )
 
 import logging
 logger = logging.getLogger(__name__)
@@ -93,50 +98,37 @@ class ApiarySiteOnApproval(models.Model):
         unique_together = ['apiary_site', 'approval',]
 
 
-class Approval(RevisionedMixin):
-    STATUS_CURRENT = 'current'
-    STATUS_EXPIRED = 'expired'
-    STATUS_CANCELLED = 'cancelled'
-    STATUS_SURRENDERED = 'surrendered'
-    STATUS_SUSPENDED = 'suspended'
-    STATUS_CHOICES = (
-        (STATUS_CURRENT, 'Current'),
-        (STATUS_EXPIRED, 'Expired'),
-        (STATUS_CANCELLED, 'Cancelled'),
-        (STATUS_SURRENDERED, 'Surrendered'),
-        (STATUS_SUSPENDED, 'Suspended')
-    )
-    lodgement_number = models.CharField(max_length=9, blank=True, default='')
-    status = models.CharField(max_length=40, choices=STATUS_CHOICES,
-                                       default=STATUS_CHOICES[0][0])
+#class Approval(RevisionedMixin):
+class Approval(AbstractApproval, RevisionedMixin):
+    #lodgement_number = models.CharField(max_length=9, blank=True, default='')
+    #status = models.CharField(max_length=40, choices=STATUS_CHOICES,
+    #                                   default=STATUS_CHOICES[0][0])
     # NB: licence_document not used for Apiary applications
     licence_document = models.ForeignKey(ApprovalDocument, blank=True, null=True, related_name='licence_document')
     cover_letter_document = models.ForeignKey(ApprovalDocument, blank=True, null=True, related_name='cover_letter_document')
     replaced_by = models.ForeignKey('self', blank=True, null=True)
-    #current_proposal = models.ForeignKey(Proposal,related_name = '+')
     current_proposal = models.ForeignKey(Proposal,related_name='approvals')
     renewal_document = models.ForeignKey(ApprovalDocument, blank=True, null=True, related_name='renewal_document')
-    # apiary_renewal_document = models.ForeignKey(RenewalDocument, blank=True, null=True, related_name='apiary_renewal_document')
-    renewal_sent = models.BooleanField(default=False)
-    issue_date = models.DateTimeField()
-    original_issue_date = models.DateField(auto_now_add=True)
-    start_date = models.DateField()
-    expiry_date = models.DateField()
-    surrender_details = JSONField(blank=True,null=True)
-    suspension_details = JSONField(blank=True,null=True)
+    #renewal_sent = models.BooleanField(default=False)
+    #issue_date = models.DateTimeField()
+    #original_issue_date = models.DateField(auto_now_add=True)
+    #start_date = models.DateField()
+    #expiry_date = models.DateField()
+    #surrender_details = JSONField(blank=True,null=True)
+    #suspension_details = JSONField(blank=True,null=True)
     applicant = models.ForeignKey(Organisation,on_delete=models.PROTECT, blank=True, null=True, related_name='disturbance_approvals')
-    proxy_applicant = models.ForeignKey(EmailUser,on_delete=models.PROTECT, blank=True, null=True, related_name='disturbance_proxy_approvals')
-    extracted_fields = JSONField(blank=True, null=True)
-    cancellation_details = models.TextField(blank=True)
-    cancellation_date = models.DateField(blank=True, null=True)
-    set_to_cancel = models.BooleanField(default=False)
-    set_to_suspend = models.BooleanField(default=False)
-    set_to_surrender = models.BooleanField(default=False)
-    reissued= models.BooleanField(default=False)
-    apiary_approval = models.BooleanField(default=False)
-    no_annual_rental_fee_until = models.DateField(blank=True, null=True)
+    #proxy_applicant = models.ForeignKey(EmailUser,on_delete=models.PROTECT, blank=True, null=True, related_name='disturbance_proxy_approvals')
+    #extracted_fields = JSONField(blank=True, null=True)
+    #cancellation_details = models.TextField(blank=True)
+    #cancellation_date = models.DateField(blank=True, null=True)
+    #set_to_cancel = models.BooleanField(default=False)
+    #set_to_suspend = models.BooleanField(default=False)
+    #set_to_surrender = models.BooleanField(default=False)
+    #reissued= models.BooleanField(default=False)
+    #apiary_approval = models.BooleanField(default=False)
+    #no_annual_rental_fee_until = models.DateField(blank=True, null=True)
     apiary_sites = models.ManyToManyField('ApiarySite', through=ApiarySiteOnApproval, related_name='approval_set')
-    migrated = models.BooleanField(default=False)
+    #migrated = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'disturbance'
