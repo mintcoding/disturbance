@@ -929,8 +929,9 @@ export default {
             }
             vm.$http.post(vm.proposal_submit_url, formData).then(
                 res=>{
+                    console.log("should not hit");
                     /* after the above save, redirect to the Django post() method in ApplicationFeeView */
-                    vm.post_and_redirect(vm.application_fee_url, {'csrfmiddlewaretoken' : vm.csrf_token});
+                    //vm.post_and_redirect(vm.application_fee_url, {'csrfmiddlewaretoken' : vm.csrf_token});
                 },
                 err=>{
                     if (err.body.type[0] === 'site_no_longer_available'){

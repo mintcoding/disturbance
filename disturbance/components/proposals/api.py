@@ -1632,6 +1632,11 @@ class ProposalViewSet(viewsets.ModelViewSet):
             instance = self.get_object()
             if instance.apiary_group_application_type:
                 save_proponent_data(instance, request, self)
+                from disturbance.components.das_payments.views import ApplicationFeeView
+                view = ApplicationFeeView(kwargs={'proposal_pk': instance.id})
+                checkout_response = view.post(request)
+                import ipdb; ipdb.set_trace()
+                return checkout_response
             else:
                 instance.submit(request, self)
                 instance.tenure = search_tenure(instance)
